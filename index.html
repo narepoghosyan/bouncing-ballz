@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://js.cx/libs/animate.js"></script>
+</head>
+<body>
+<div id="container">
+    <div id="notice">Click on the screen to spawn a circle</div>
+</div>
+<script>
+    let numberOfCircles = 0;
+
+    function makeEaseOut(timing) {
+        return function(timeFraction) {
+            return 1 - timing(1 - timeFraction);
+        }
+    }
+
+    function bounce(timeFraction) {
+        for (let a = 0, b = 1; 1; a += b, b /= 2) {
+            if (timeFraction >= (7 - 4 * a) / 11) {
+                return -Math.pow((11 - 6 * a - 11 * timeFraction) / 4, 2) + Math.pow(b, 2)
+            }
+        }
+    }
+
+    function spawnACircle(left, top) {
+        const circle = document.createElement('div');
+        circle.setAttribute('class', 'circle');
+        circle.style.left = left -50 + 'px';
+        circle.style.top = top - 50 + 'px';
+        container.appendChild(circle);
+
+        return circle;
+    }
+
+    let bounceEaseOut = makeEaseOut(bounce);
+
+    document.onclick = function(event) {
+        if (numberOfCircles >= 15) {
+            return;
+        }
+
+        const circle = spawnACircle(event.pageX, event.pageY);
+        numberOfCircles++;
+
+        animate({
+            duration: 3000,
+            timing: bounceEaseOut,
+            draw: function(progress) {
+                circle.style.top = progress * (container.offsetHeight - 100) + 'px';
+            }
+        });
+
+    };
+</script>
+</body>
+</html>
